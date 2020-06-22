@@ -2,17 +2,19 @@ import { ActionTree } from 'vuex'
 import config from 'config'
 import i18n from '@vue-storefront/i18n'
 import { TaskQueue } from '@vue-storefront/core/lib/sync'
-import { htmlDecode } from '@vue-storefront/core/store/lib/filters'
+import { htmlDecode } from '@vue-storefront/core/filters'
 import * as coreTypes from '@vue-storefront/core/modules/wishlist/store/mutation-types'
 import * as types from './mutation-types'
 import { processURLAddress } from '@vue-storefront/core/helpers'
 import { adjustMultistoreApiUrl } from '@vue-storefront/core/lib/multistore'
 import RootState from '@vue-storefront/core/types/RootState'
 import MagentoWishlistState from '../types/MagentoWishlistState'
-import { cacheStorage } from '@vue-storefront/core/modules/wishlist'
+import { StorageManager } from '@vue-storefront/core/lib/storage-manager'
 import { Logger } from '@vue-storefront/core/lib/logger'
 import rootStore from '@vue-storefront/core/store'
 import { prepareQuery } from '@vue-storefront/core/modules/catalog/queries/common'
+
+const cacheStorage = StorageManager.get('wishlist')
 
 const actions: ActionTree<MagentoWishlistState, RootState> = {
   clear (context): Promise<Response> {
@@ -28,7 +30,7 @@ const actions: ActionTree<MagentoWishlistState, RootState> = {
         TaskQueue.execute({ url,
           payload: {
             method: 'DELETE',
-            headers: { 
+            headers: {
               'Accept': 'application/json',
               'Content-Type': 'application/json'
             },
@@ -64,7 +66,7 @@ const actions: ActionTree<MagentoWishlistState, RootState> = {
         TaskQueue.execute({ url,
           payload: {
             method: 'GET',
-            headers: { 
+            headers: {
               'Accept': 'application/json'
             },
             mode: 'cors'
@@ -82,7 +84,7 @@ const actions: ActionTree<MagentoWishlistState, RootState> = {
               const skuQuery = prepareQuery({ filters: [
                 { key: 'sku', value: { 'in': productSKUs } }
               ] })
-          
+
               rootStore.dispatch('product/list', {
                 query: skuQuery
               }).then(res => {
@@ -139,7 +141,7 @@ const actions: ActionTree<MagentoWishlistState, RootState> = {
         TaskQueue.execute({ url,
           payload: {
             method: 'PUT',
-            headers: { 
+            headers: {
               'Accept': 'application/json'
             },
             mode: 'cors'
@@ -187,7 +189,7 @@ const actions: ActionTree<MagentoWishlistState, RootState> = {
         TaskQueue.execute({ url,
           payload: {
             method: 'DELETE',
-            headers: { 
+            headers: {
               'Accept': 'application/json'
             },
             mode: 'cors'

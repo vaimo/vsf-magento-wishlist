@@ -1,9 +1,8 @@
-import { VueStorefrontModuleConfig } from '@vue-storefront/core/lib/module'
 import { module } from './store'
+import { StorefrontModule } from '@vue-storefront/core/lib/modules'
 
 export const KEY = 'wishlist'
 
-export const MagentoWishlistExtend: VueStorefrontModuleConfig = {
-  key: KEY,
-  store: { modules: [{ key: KEY, module }] }
+export const MagentoWishlistExtend: StorefrontModule = function ({ store, router, appConfig }) {
+  store.registerModule(KEY, module)
 }
