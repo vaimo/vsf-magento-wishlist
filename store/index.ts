@@ -2,14 +2,17 @@ import { Module } from 'vuex'
 import actions from './actions'
 import mutations from './mutations'
 import getters from './getters'
-import state from './state'
 import RootState from '@vue-storefront/core/types/RootState'
-import MagentoWishlistState from '../types/MagentoWishlistState'
+import WishlistState from '../types/WishlistState'
 
-export const module: Module<MagentoWishlistState, RootState> = {
+export const wishlistStore: Module<WishlistState, RootState> = {
   namespaced: true,
+  state: {
+    loaded: false,
+    items: [],
+    itemIds: {}
+  },
   actions,
   mutations,
-  getters,
-  state
+  getters
 }

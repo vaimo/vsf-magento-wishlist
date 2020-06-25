@@ -1,8 +1,12 @@
 import { GetterTree } from 'vuex'
 import RootState from '@vue-storefront/core/types/RootState'
-import MagentoWishlistState from '../types/MagentoWishlistState'
+import WishlistState from '../types/WishlistState'
 
-const getters: GetterTree<MagentoWishlistState, RootState> = {
+const getters: GetterTree<WishlistState, RootState> = {
+  isOnWishlist: state => product =>
+    state.items.some(p => p.sku === product.sku),
+  isWishlistLoaded: state => state.loaded,
+  getWishlistItemsCount: state => state.items.length,
   getItemId: state => product => {
     return state.itemIds[product.sku]
   }

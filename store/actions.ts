@@ -1,22 +1,22 @@
 import { ActionTree } from 'vuex'
-import config from 'config'
-import i18n from '@vue-storefront/i18n'
-import { TaskQueue } from '@vue-storefront/core/lib/sync'
-import { htmlDecode } from '@vue-storefront/core/filters'
-import * as coreTypes from '@vue-storefront/core/modules/wishlist/store/mutation-types'
 import * as types from './mutation-types'
-import { processURLAddress } from '@vue-storefront/core/helpers'
-import { adjustMultistoreApiUrl } from '@vue-storefront/core/lib/multistore'
 import RootState from '@vue-storefront/core/types/RootState'
-import MagentoWishlistState from '../types/MagentoWishlistState'
+import WishlistState from '../types/WishlistState'
+import { htmlDecode } from '@vue-storefront/core/filters'
 import { StorageManager } from '@vue-storefront/core/lib/storage-manager'
-import { Logger } from '@vue-storefront/core/lib/logger'
+import * as coreTypes from '@vue-storefront/core/modules/wishlist/store/mutation-types';
 import rootStore from '@vue-storefront/core/store'
-import { prepareQuery } from '@vue-storefront/core/modules/catalog/queries/common'
+import { processURLAddress } from '@vue-storefront/core/helpers';
+import { adjustMultistoreApiUrl } from '@vue-storefront/core/lib/multistore';
+import { TaskQueue } from '@vue-storefront/core/lib/sync';
+import { Logger } from '@vue-storefront/core/lib/logger';
+import { prepareQuery } from '@vue-storefront/core/modules/catalog/queries/common';
+import i18n from '@vue-storefront/core/i18n'
+import config from 'config'
 
 const cacheStorage = StorageManager.get('wishlist')
 
-const actions: ActionTree<MagentoWishlistState, RootState> = {
+const actions: ActionTree<WishlistState, RootState> = {
   clear (context): Promise<Response> {
     return new Promise((resolve, reject) => {
       const clear = () => {
@@ -166,7 +166,7 @@ const actions: ActionTree<MagentoWishlistState, RootState> = {
         commit(coreTypes.WISH_DEL_ITEM, { product })
         rootStore.dispatch('notification/spawnNotification', {
           type: 'success',
-          message: i18n.t('Product {productName} has been removed from wishlit!', { productName: htmlDecode(product.name) }),
+          message: i18n.t('Product {productName} has been removed from wishlist!', { productName: htmlDecode(product.name) }),
           action1: { label: i18n.t('OK') }
         })
         cacheStorage.setItem('current-wishlist', state.items).catch((reason) => {
@@ -208,6 +208,10 @@ const actions: ActionTree<MagentoWishlistState, RootState> = {
         removeItem(product)
       }
     })
+  },
+  loadFromCache () {
+    const wishlistStorage = StorageManager.get('wishlist')
+    return wishlistStorage.getItem('current-wishlist')
   }
 }
 
