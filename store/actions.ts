@@ -56,7 +56,9 @@ const actions: ActionTree<WishlistState, RootState> = {
     })
   },
   load ({ state, commit, getters }, force: boolean = false): Promise<Response> {
-    if (!force && getters.isWishlistLoaded) return
+    if (getters.isWishlistLoading || (!force && getters.isWishlistLoaded)) return
+
+    commit(types.SET_WISHLIST_LOADING)
 
     return new Promise((resolve, reject) => {
       if (rootStore.state.user.current) {
@@ -73,9 +75,9 @@ const actions: ActionTree<WishlistState, RootState> = {
           }
         }).then(resp => {
           if (resp.resultCode === 200) {
-            commit(coreTypes.SET_WISHLIST_LOADED)
             commit(coreTypes.WISH_LOAD_WISH, resp.result.items.map(item => item.product))
             commit(types.SET_WISHLIST_ITEM_IDS, resp.result.items)
+            commit(coreTypes.SET_WISHLIST_LOADED)
             Logger.info('Wishlist state loaded from magento. ', 'api', state.items)()
             cacheStorage.setItem('current-wishlist', state.items)
 
@@ -101,6 +103,8 @@ const actions: ActionTree<WishlistState, RootState> = {
           }
         }).catch(err => {
           reject(err)
+        }).finally(() => {
+          commit(types.SET_WISHLIST_LOADING, false)
         })
       } else {
         cacheStorage.getItem('current-wishlist', (err, storedItems) => {
@@ -108,8 +112,9 @@ const actions: ActionTree<WishlistState, RootState> = {
             reject(err)
             throw new Error(err)
           }
-          commit(coreTypes.SET_WISHLIST_LOADED)
           commit(coreTypes.WISH_LOAD_WISH, storedItems)
+          commit(coreTypes.SET_WISHLIST_LOADED)
+          commit(types.SET_WISHLIST_LOADING, false)
           Logger.info('Wishlist state loaded from browser cache. ', 'cache', storedItems)()
           resolve(storedItems)
         })

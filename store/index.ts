@@ -9,6 +9,7 @@ export const wishlistStore: Module<WishlistState, RootState> = {
   namespaced: true,
   state: {
     loaded: false,
+    loading: false,
     items: [],
     itemIds: {}
   },
