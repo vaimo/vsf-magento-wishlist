@@ -125,11 +125,6 @@ const actions: ActionTree<WishlistState, RootState> = {
     return new Promise((resolve, reject) => {
       const addItem = product => {
         commit(coreTypes.WISH_ADD_ITEM, { product })
-        rootStore.dispatch('notification/spawnNotification', {
-          type: 'success',
-          message: i18n.t('Product {productName} has been added to wishlist!', { productName: htmlDecode(product.name) }),
-          action1: { label: i18n.t('OK') }
-        })
         cacheStorage.setItem('current-wishlist', state.items).catch((reason) => {
           Logger.error(reason, 'wishlist') // it doesn't work on SSR
         })
@@ -169,11 +164,6 @@ const actions: ActionTree<WishlistState, RootState> = {
     return new Promise((resolve, reject) => {
       const removeItem = product => {
         commit(coreTypes.WISH_DEL_ITEM, { product })
-        rootStore.dispatch('notification/spawnNotification', {
-          type: 'success',
-          message: i18n.t('Product {productName} has been removed from wishlist!', { productName: htmlDecode(product.name) }),
-          action1: { label: i18n.t('OK') }
-        })
         cacheStorage.setItem('current-wishlist', state.items).catch((reason) => {
           Logger.error(reason, 'wishlist') // it doesn't work on SSR
         })
