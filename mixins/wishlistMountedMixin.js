@@ -1,10 +1,22 @@
-/**
- * This is mixin for all module components.
- * Invoke here actions, which were not invoked on server-side render, like reading LocalStorage or checking window size.
- */
+import { mapState } from 'vuex'
 
 export default {
+  computed: {
+    ...mapState({
+      currentUser: (state) => state.user.current
+    })
+  },
   mounted () {
-    this.$store.dispatch('wishlist/load')
+    if (this.currentUser) {
+      this.loadWishlist()
+    } else {
+      this.$bus.$on('user-after-loggedin', this.loadWishlist)
+    }
+  },
+  methods: {
+    loadWishlist () {
+      this.$bus.$off('user-after-loggedin', this.loadWishlist)
+      return this.$store.dispatch('wishlist/load')
+    }
   }
 }

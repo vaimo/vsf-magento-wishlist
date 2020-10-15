@@ -24,7 +24,7 @@ const actions: ActionTree<WishlistState, RootState> = {
         cacheStorage.removeItem('current-wishlist')
       }
 
-      if (rootStore.state.user.current) {
+      if (rootStore.state.user.token) {
         let url = processURLAddress(config.magentoWishlist.endpoint) + '?token={{token}}'
         url = config.storeViews.multistore ? adjustMultistoreApiUrl(url) : url
         TaskQueue.execute({ url,
@@ -61,7 +61,7 @@ const actions: ActionTree<WishlistState, RootState> = {
     commit(types.SET_WISHLIST_LOADING)
 
     return new Promise((resolve, reject) => {
-      if (rootStore.state.user.current) {
+      if (rootStore.state.user.token) {
         let url = processURLAddress(config.magentoWishlist.endpoint) + '?token={{token}}'
         url = config.storeViews.multistore ? adjustMultistoreApiUrl(url) : url
 
@@ -128,13 +128,13 @@ const actions: ActionTree<WishlistState, RootState> = {
         cacheStorage.setItem('current-wishlist', state.items).catch((reason) => {
           Logger.error(reason, 'wishlist') // it doesn't work on SSR
         })
-        if (rootStore.state.user.current) {
+        if (rootStore.state.user.token) {
           dispatch('load', true)
         }
         resolve(product)
       }
 
-      if (rootStore.state.user.current) {
+      if (rootStore.state.user.token) {
         let url = processURLAddress(config.magentoWishlist.endpoint) + '/' + product.sku + '?token={{token}}'
         url = config.storeViews.multistore ? adjustMultistoreApiUrl(url) : url
 
@@ -170,7 +170,7 @@ const actions: ActionTree<WishlistState, RootState> = {
         resolve(product)
       }
 
-      if (rootStore.state.user.current) {
+      if (rootStore.state.user.token) {
         let wishItemId = getters.getItemId(product)
 
         if (typeof wishItemId === 'undefined') {
