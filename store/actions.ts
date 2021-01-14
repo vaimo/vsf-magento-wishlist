@@ -17,6 +17,11 @@ import config from 'config'
 const cacheStorage = StorageManager.get('wishlist')
 
 const actions: ActionTree<WishlistState, RootState> = {
+  reset (context) {
+    context.commit(types.SET_WISHLIST_LOADED, false)
+    context.commit(coreTypes.WISH_LOAD_WISH, [])
+    cacheStorage.removeItem('current-wishlist')
+  },
   clear (context): Promise<Response> {
     return new Promise((resolve, reject) => {
       const clear = () => {
@@ -25,7 +30,7 @@ const actions: ActionTree<WishlistState, RootState> = {
       }
 
       if (rootStore.state.user.token) {
-        let url = processURLAddress(config.magentoWishlist.endpoint) + '?token={{token}}'
+        let url = processURLAddress(config.magentoWishlist.endpoint)
         url = config.storeViews.multistore ? adjustMultistoreApiUrl(url) : url
         TaskQueue.execute({ url,
           payload: {
@@ -36,7 +41,9 @@ const actions: ActionTree<WishlistState, RootState> = {
             },
             mode: 'cors',
             body: JSON.stringify({
-              items: context.state.items.map(item => item.id)
+              items: context.state.items.map(item => {
+                return context.getters.getItemId(item)
+              })
             })
           }
         }).then(resp => {
@@ -62,7 +69,7 @@ const actions: ActionTree<WishlistState, RootState> = {
 
     return new Promise((resolve, reject) => {
       if (rootStore.state.user.token) {
-        let url = processURLAddress(config.magentoWishlist.endpoint) + '?token={{token}}'
+        let url = processURLAddress(config.magentoWishlist.endpoint)
         url = config.storeViews.multistore ? adjustMultistoreApiUrl(url) : url
 
         TaskQueue.execute({ url,
@@ -135,7 +142,8 @@ const actions: ActionTree<WishlistState, RootState> = {
       }
 
       if (rootStore.state.user.token) {
-        let url = processURLAddress(config.magentoWishlist.endpoint) + '/' + product.sku + '?token={{token}}'
+        let url = processURLAddress(config.magentoWishlist.add_endpoint)
+          .replace('{{sku}}', product.sku + '')
         url = config.storeViews.multistore ? adjustMultistoreApiUrl(url) : url
 
         TaskQueue.execute({ url,
@@ -178,7 +186,9 @@ const actions: ActionTree<WishlistState, RootState> = {
           return
         }
 
-        let url = processURLAddress(config.magentoWishlist.endpoint) + '/' + wishItemId + '?token={{token}}'
+        let url = processURLAddress(config.magentoWishlist.remove_endpoint)
+          .replace('{{itemId}}', wishItemId + '')
+
         url = config.storeViews.multistore ? adjustMultistoreApiUrl(url) : url
 
         TaskQueue.execute({ url,

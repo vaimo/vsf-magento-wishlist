@@ -1,5 +1,5 @@
 import Product from '@vue-storefront/core/modules/catalog/types/Product'
-import { WishlistModule } from '../'
+import { WishlistModule } from '@vue-storefront/core/modules/wishlist'
 import wishlistMountedMixin from '@vue-storefront/core/modules/wishlist/mixins/wishlistMountedMixin'
 import { registerModule } from '@vue-storefront/core/lib/modules';
 

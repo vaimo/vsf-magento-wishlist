@@ -8,23 +8,29 @@ Requires mediamanDE [magento-module-wishlist-api](https://github.com/mediamanDE/
 By hand (preferer):
 
 ```shell
-git clone git@github.com:AbsoluteWebServices/vsf-magento-wishlist.git ./vue-storefront/src/modules/
+git clone --single-branch --branch feature/tkg-selver git@github.com:vaimo/vsf-magento-wishlist.git ./vue-storefront/src/modules/
+
+// or add as submodule
+$ git submodule add -b feature/tkg-selver git@github.com:vaimo/vsf-magento-wishlist.git src/modules/vsf-magento-wishlist
+$ git submodule update --remote
 ```
 
 Registration the Magento Wishlist module. Go to `./vue-storefront/src/modules/index.ts`
 
 ```js
 ...
-import { MagentoWishlistExtend } from './vsf-magento-wishlist'
+import { MagentoWishlistExtend } from './vsf-magento-wishlist';
 
-extendModule(MagentoWishlistExtend)
+registerModule(MagentoWishlistExtend)
 ```
 
 Add following settings to your config file.
 
 ```json
   "magentoWishlist": {
-    "endpoint": "http://localhost:8080/api/ext/magento-wishlist"
+    "endpoint": "/api/ext/magento-wishlist?token={{token}}",
+    "add_endpoint": "/api/ext/magento-wishlist/{{sku}}?token={{token}}",
+    "remove_endpoint": "/api/ext/magento-wishlist/{{itemId}}?token={{token}}"
   },
 ```
 

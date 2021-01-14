@@ -1,10 +1,9 @@
-import { StorefrontModule } from '@vue-storefront/core/lib/modules'
-import { wishlistStore } from './store'
+import { wishlistStore as extendWishlistVuex } from './store'
 import whishListPersistPlugin from './store/whishListPersistPlugin'
-import { StorageManager } from '@vue-storefront/core/lib/storage-manager'
+import { extendStore } from '@vue-storefront/core/helpers';
+import { StorefrontModule } from 'core/lib/modules';
 
-export const WishlistModule: StorefrontModule = function ({ store }) {
-  StorageManager.init('wishlist')
-  store.registerModule('wishlist', wishlistStore)
+export const MagentoWishlistExtend: StorefrontModule = function ({ store, router }) {
+  extendStore('wishlist', extendWishlistVuex);
   store.subscribe(whishListPersistPlugin)
 }
