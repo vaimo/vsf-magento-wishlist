@@ -1,10 +1,20 @@
-import { StorefrontModule } from '@vue-storefront/core/lib/modules'
-import { wishlistStore } from './store'
+import { wishlistStore as extendWishlistVuex } from './store'
 import whishListPersistPlugin from './store/whishListPersistPlugin'
-import { StorageManager } from '@vue-storefront/core/lib/storage-manager'
+import { extendStore, isServer } from '@vue-storefront/core/helpers';
+import { StorefrontModule } from 'core/lib/modules';
+import EventBus from '@vue-storefront/core/compatibility/plugins/event-bus'
 
-export const WishlistModule: StorefrontModule = function ({ store }) {
-  StorageManager.init('wishlist')
-  store.registerModule('wishlist', wishlistStore)
+export const MagentoWishlistExtend: StorefrontModule = function ({ store, router }) {
+  extendStore('wishlist', extendWishlistVuex);
   store.subscribe(whishListPersistPlugin)
+
+  if (!isServer) {
+    EventBus.$on('user-after-loggedin', () => {
+      store.dispatch('wishlist/load', true)
+    })
+
+    EventBus.$on('user-after-logout', () => {
+      store.dispatch('wishlist/reset')
+    })
+  }
 }
